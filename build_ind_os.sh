@@ -1,11 +1,11 @@
 MACHINE=$1
 BUILD_DIRECTORY=$2
 echo "$(pwd)"
-"Printed current working directory"
+echo "Printed current working directory"
 sudo rm -rf build
 . industrial-core/setup-environment ipc
-bitbake development-image"
-bitbake service-stick-image"
+bitbake development-image
+bitbake service-stick-image
 
 
 
