@@ -1,3 +1,58 @@
+
+lodev=""
+mntdir=""
+
+cleanup() {
+	     if [ -n "${lodev}" ]; then
+		sudo losetup -d "${lodev}"
+	     fi
+	     if [ -n "${mntdir}" ]; then
+		mountpoint "${mntdir}" >/dev/null && sudo umount "${mntdir}"
+		rmdir "${mntdir}"
+	     fi
+     }
+
+
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Clean previous build
+# ---------------------------------------------------------------------------------------------------------------------
+get_build_mounts() {
+	mount|awk '{print $3;}'|grep ^${PWD}/ || true
+}
+
+rm_build_mounts() {
+	local tries=0
+	while :
+	do
+	     mounts=$(get_build_mounts)
+	     [ -z "${mounts}" ] && break
+             for m in ${mounts}
+             do
+             	sudo umount ${m} 2>/dev/null || true
+             done
+
+             # Abort if some mounts remain after multiple attempts
+             tries=$((${tries} + 1))
+
+	     if [ ${tries} -ge 3 ]
+	     then
+	         echo "# error: mounts within 'tmp' are busy!" >&2
+	         exit 1
+	     fi
+	     sleep 1
+	done
+}
+
+trap cleanup EXIT
+mounts=$(get_build_mounts)
+if [ -n "${mounts}" ]; then
+    echo "# trying to remove mounts from previous build(s)..."
+    rm_build_mounts
+fi
+
+
 MACHINE=$1
 BUILD_DIRECTORY=$2
 echo "$(pwd)"
