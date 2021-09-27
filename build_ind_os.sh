@@ -66,7 +66,7 @@ bitbake service-stick-image
 
 echo "Create a loopback device for the current service stick image"
 sudo losetup -d /dev/loop0 2>/dev/null || true
-sudo losetup /dev/loop0 tmp/deploy/images/ipc/service-stick-imageindustrial-os-ipc.wic.img
+sudo losetup /dev/loop0 tmp/deploy/images/ipc/service-stick-image-industrial-os-ipc.wic.img
 
 echo "Probe partitions from the service stick (image)"
 sudo partprobe /dev/loop0
