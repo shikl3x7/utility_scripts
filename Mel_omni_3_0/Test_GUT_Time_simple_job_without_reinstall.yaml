@@ -1,0 +1,39 @@
+priority: high
+visibility: public
+device_type: industrial-mtda3
+tags:
+- ipc127emtda_omni
+timeouts:
+  job:
+    hours: 10
+  action:
+    minutes: 90
+  connection:
+    minutes: 20
+job_name: Initial Test
+actions:
+- deploy:
+    to: overlay
+- boot:
+    method: minimal
+    reset: true
+    failure_retry: 2
+    auto_login:
+      login_prompt: 'lava login:'
+      username: root
+      password_prompt: "Password:"
+      password: AutoTest!
+    prompts:
+    - 'root@lava:~#'
+    transfer_overlay:
+      download_command: mel-setup-cli -n -s time.google.com dateTime;sleep 60;date;apt-get update && apt-get -y install wget expect gcc; wget
+      unpack_command: tar -C / -xzf
+- test:
+    timeout:
+      hours: 4
+    definitions:
+    - repository: ssh://git@stash.alm.mentorg.com:7999/qa/linux-qa-suites.git
+      from: git
+      branch: master
+      path: automated/eps-test/lttng/lttng.yaml
+      name: Test_lttng_mel_omni_3_0
